@@ -1,4 +1,4 @@
-package model
+package graphmodel
 
 type Todo struct {
 	ID     string `json:"id"`
