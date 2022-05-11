@@ -5,8 +5,8 @@ import (
 )
 
 type User struct {
-	Id          int64 // `gorm:"primary_key AUTO_INCREMENT"`
-	name        *string
-	CreatedAt   time.Time
-	UpdatedAt   time.Time
+	Id        int64 // `gorm:"primary_key AUTO_INCREMENT"`
+	Name      *string
+	CreatedAt time.Time
+	UpdatedAt time.Time
 }

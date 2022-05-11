@@ -13,6 +13,7 @@ import (
 	"github.com/greendrop/todo-graphql-go-sample/interface/graph"
 	graphgenerated "github.com/greendrop/todo-graphql-go-sample/interface/graph/generated"
 	usecase_todo "github.com/greendrop/todo-graphql-go-sample/usecase/todo"
+	usecase_user "github.com/greendrop/todo-graphql-go-sample/usecase/user"
 	"go.uber.org/zap"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
@@ -48,8 +49,10 @@ func main() {
 	todoPersistence := persistence.NewTodoPersistence()
 	todoGetTodoListUseCase := usecase_todo.NewTodoGetTodoListUseCase(todoPersistence)
 	todoCreateTodoUseCase := usecase_todo.NewTodoCreateTodoUseCase(todoPersistence)
+	userPersistence := persistence.NewUserPersistence()
+	userGetUserUseCase := usecase_user.NewUserGetUserUseCase(userPersistence)
 
-	resolver := graph.NewResolver(todoGetTodoListUseCase, todoCreateTodoUseCase)
+	resolver := graph.NewResolver(todoGetTodoListUseCase, todoCreateTodoUseCase, userGetUserUseCase)
 	srv := handler.NewDefaultServer(graphgenerated.NewExecutableSchema(graphgenerated.Config{Resolvers: resolver}))
 
 	http.Handle("/", playground.Handler("GraphQL playground", "/query"))

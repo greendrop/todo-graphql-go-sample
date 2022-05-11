@@ -57,7 +57,15 @@ func (r *queryResolver) Todos(ctx context.Context) ([]*graphmodel.Todo, error) {
 
 func (r *todoResolver) User(ctx context.Context, obj *graphmodel.Todo) (*graphmodel.User, error) {
 	// panic(fmt.Errorf("not implemented"))
-	return &graphmodel.User{ID: obj.UserID, Name: "user " + obj.UserID}, nil
+	// return &graphmodel.User{ID: obj.UserID, Name: "user " + obj.UserID}, nil
+
+	userId, _ := strconv.ParseInt(obj.UserID, 10, 64)
+	user, _ := r.userGetUserUseCase.Execute(userId)
+
+	return &graphmodel.User{
+		ID:   strconv.FormatInt(user.Id, 10),
+		Name: *user.Name,
+	}, nil
 }
 
 // Mutation returns graphgenerated.MutationResolver implementation.
