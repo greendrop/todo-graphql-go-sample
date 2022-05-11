@@ -8,6 +8,7 @@ require (
 	go.uber.org/zap v1.21.0
 	gorm.io/driver/mysql v1.3.3
 	gorm.io/gorm v1.23.5
+	moul.io/zapgorm2 v1.1.3
 )
 
 require (
@@ -26,7 +27,7 @@ require (
 	github.com/urfave/cli/v2 v2.4.0 // indirect
 	go.uber.org/atomic v1.7.0 // indirect
 	go.uber.org/goleak v1.1.12 // indirect
-	go.uber.org/multierr v1.6.0 // indirect
+	go.uber.org/multierr v1.7.0 // indirect
 	golang.org/x/mod v0.6.0-dev.0.20220106191415-9b9b3d81d5e3 // indirect
 	golang.org/x/sys v0.0.0-20220317061510-51cd9980dadf // indirect
 	golang.org/x/tools v0.1.10 // indirect

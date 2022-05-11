@@ -5,28 +5,54 @@ package graph
 
 import (
 	"context"
-	"fmt"
-	"math/rand"
+	"strconv"
 
+	"github.com/greendrop/todo-graphql-go-sample/domain/entity"
 	graphgenerated "github.com/greendrop/todo-graphql-go-sample/interface/graph/generated"
 	graphmodel "github.com/greendrop/todo-graphql-go-sample/interface/graph/model"
 )
 
 func (r *mutationResolver) CreateTodo(ctx context.Context, input graphmodel.NewTodo) (*graphmodel.Todo, error) {
 	// panic(fmt.Errorf("not implemented"))
-	todo := &graphmodel.Todo{
-		Text: input.Text,
-		ID:   fmt.Sprintf("T%d", rand.Int()),
-		// User: &graphmodel.User{ID: input.UserID, Name: "user " + input.UserID},
-		UserID: input.UserID,
-	}
-	r.todos = append(r.todos, todo)
-	return todo, nil
+	// todo := &graphmodel.Todo{
+	// 	Text: input.Text,
+	// 	ID:   fmt.Sprintf("T%d", rand.Int()),
+	// 	// User: &graphmodel.User{ID: input.UserID, Name: "user " + input.UserID},
+	// 	UserID: input.UserID,
+	// }
+	// r.todos = append(r.todos, todo)
+	// return todo, nil
+
+	todo, _ := r.todoCreateTodoUseCase.Execute(&entity.Todo{
+		UserId: 1,
+		Title:  &input.Text,
+	})
+
+	return &graphmodel.Todo{
+		ID:     strconv.FormatInt(todo.Id, 10),
+		Text:   *todo.Title,
+		Done:   todo.Done,
+		UserID: strconv.FormatInt(todo.UserId, 10),
+	}, nil
 }
 
 func (r *queryResolver) Todos(ctx context.Context) ([]*graphmodel.Todo, error) {
 	// panic(fmt.Errorf("not implemented"))
-	return r.todos, nil
+	// return r.todos, nil
+
+	todos, _ := r.todoGetTodoListUseCase.Execute()
+
+	var graphmodelTodos []*graphmodel.Todo
+	for _, todo := range *todos {
+		graphmodelTodos = append(graphmodelTodos, &graphmodel.Todo{
+			ID:     strconv.FormatInt(todo.Id, 10),
+			Text:   *todo.Title,
+			Done:   todo.Done,
+			UserID: strconv.FormatInt(todo.UserId, 10),
+		})
+	}
+
+	return graphmodelTodos, nil
 }
 
 func (r *todoResolver) User(ctx context.Context, obj *graphmodel.Todo) (*graphmodel.User, error) {
