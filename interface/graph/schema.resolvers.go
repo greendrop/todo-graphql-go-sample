@@ -10,6 +10,7 @@ import (
 	"github.com/greendrop/todo-graphql-go-sample/domain/entity"
 	graphgenerated "github.com/greendrop/todo-graphql-go-sample/interface/graph/generated"
 	graphmodel "github.com/greendrop/todo-graphql-go-sample/interface/graph/model"
+	"github.com/greendrop/todo-graphql-go-sample/interface/loader"
 )
 
 func (r *mutationResolver) CreateTodo(ctx context.Context, input graphmodel.NewTodo) (*graphmodel.Todo, error) {
@@ -59,13 +60,15 @@ func (r *todoResolver) User(ctx context.Context, obj *graphmodel.Todo) (*graphmo
 	// panic(fmt.Errorf("not implemented"))
 	// return &graphmodel.User{ID: obj.UserID, Name: "user " + obj.UserID}, nil
 
-	userId, _ := strconv.ParseInt(obj.UserID, 10, 64)
-	user, _ := r.userGetUserUseCase.Execute(userId)
+	// userId, _ := strconv.ParseInt(obj.UserID, 10, 64)
+	// user, _ := r.userGetUserUseCase.Execute(userId)
 
-	return &graphmodel.User{
-		ID:   strconv.FormatInt(user.Id, 10),
-		Name: *user.Name,
-	}, nil
+	// return &graphmodel.User{
+	// 	ID:   strconv.FormatInt(user.Id, 10),
+	// 	Name: *user.Name,
+	// }, nil
+
+	return loader.GetUser(ctx, obj.UserID)
 }
 
 // Mutation returns graphgenerated.MutationResolver implementation.

@@ -12,6 +12,7 @@ import (
 	"github.com/greendrop/todo-graphql-go-sample/infrastructure/persistence"
 	"github.com/greendrop/todo-graphql-go-sample/interface/graph"
 	graphgenerated "github.com/greendrop/todo-graphql-go-sample/interface/graph/generated"
+	"github.com/greendrop/todo-graphql-go-sample/interface/loader"
 	usecase_todo "github.com/greendrop/todo-graphql-go-sample/usecase/todo"
 	usecase_user "github.com/greendrop/todo-graphql-go-sample/usecase/user"
 	"go.uber.org/zap"
@@ -56,7 +57,8 @@ func main() {
 	srv := handler.NewDefaultServer(graphgenerated.NewExecutableSchema(graphgenerated.Config{Resolvers: resolver}))
 
 	http.Handle("/", playground.Handler("GraphQL playground", "/query"))
-	http.Handle("/query", srv)
+	// http.Handle("/query", srv)
+	http.Handle("/query", loader.Middleware(loader.NewLoaders(), srv))
 
 	log.Printf("connect to http://localhost:%s/ for GraphQL playground", port)
 	log.Fatal(http.ListenAndServe(":"+port, nil))
@@ -94,7 +96,6 @@ func loadAppConfig() (*entity.AppConfig, error) {
 func openDatabase() (*gorm.DB, error) {
 	dsn := strings.Replace(persistence.AppConfig.Database.Url, "mysql://", "", 1)
 	logger := zapgorm2.New(zap.L())
-	logger.SetAsDefault()
 	gormDB, err := gorm.Open(mysql.Open(dsn), &gorm.Config{Logger: logger})
 
 	if err != nil {
