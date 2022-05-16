@@ -8,9 +8,11 @@ import (
 	"strconv"
 
 	"github.com/greendrop/todo-graphql-go-sample/domain/entity"
+	"github.com/greendrop/todo-graphql-go-sample/infrastructure/persistence"
 	graphgenerated "github.com/greendrop/todo-graphql-go-sample/interface/graph/generated"
 	graphmodel "github.com/greendrop/todo-graphql-go-sample/interface/graph/model"
 	"github.com/greendrop/todo-graphql-go-sample/interface/loader"
+	"github.com/greendrop/todo-graphql-go-sample/models"
 )
 
 func (r *mutationResolver) CreateTodo(ctx context.Context, input graphmodel.NewTodo) (*graphmodel.Todo, error) {
@@ -41,15 +43,30 @@ func (r *queryResolver) Todos(ctx context.Context) ([]*graphmodel.Todo, error) {
 	// panic(fmt.Errorf("not implemented"))
 	// return r.todos, nil
 
-	todos, _ := r.todoGetTodoListUseCase.Execute()
+	// todos, _ := r.todoGetTodoListUseCase.Execute()
+
+	// var graphmodelTodos []*graphmodel.Todo
+	// for _, todo := range *todos {
+	// 	graphmodelTodos = append(graphmodelTodos, &graphmodel.Todo{
+	// 		ID:     strconv.FormatInt(todo.Id, 10),
+	// 		Text:   *todo.Title,
+	// 		Done:   todo.Done,
+	// 		UserID: strconv.FormatInt(todo.UserId, 10),
+	// 	})
+	// }
+
+	// return graphmodelTodos, nil
+
+	db, _ := persistence.GormDB.DB()
+	todos, _ := models.Todos().All(ctx, db)
 
 	var graphmodelTodos []*graphmodel.Todo
-	for _, todo := range *todos {
+	for _, todo := range todos {
 		graphmodelTodos = append(graphmodelTodos, &graphmodel.Todo{
-			ID:     strconv.FormatInt(todo.Id, 10),
-			Text:   *todo.Title,
+			ID:     strconv.FormatInt(todo.ID, 10),
+			Text:   *todo.Title.Ptr(),
 			Done:   todo.Done,
-			UserID: strconv.FormatInt(todo.UserId, 10),
+			UserID: strconv.FormatInt(todo.UserID, 10),
 		})
 	}
 
