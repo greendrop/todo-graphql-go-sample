@@ -11,6 +11,8 @@ import (
 	"github.com/greendrop/todo-graphql-go-sample/domain/entity"
 	"github.com/greendrop/todo-graphql-go-sample/infrastructure/persistence"
 	graphgenerated "github.com/greendrop/todo-graphql-go-sample/interface/graph/generated"
+	"github.com/greendrop/todo-graphql-go-sample/interface/graph2"
+	graphgenerated2 "github.com/greendrop/todo-graphql-go-sample/interface/graph2/generated"
 	"github.com/greendrop/todo-graphql-go-sample/interface/loader"
 	"github.com/greendrop/todo-graphql-go-sample/registry"
 	"go.uber.org/zap"
@@ -53,10 +55,12 @@ func server() error {
 	// resolver := graph.NewResolver(todoGetTodoListUseCase, todoCreateTodoUseCase, userGetUserUseCase)
 	resolver := registry.InitializeGraphResolver()
 	srv := handler.NewDefaultServer(graphgenerated.NewExecutableSchema(graphgenerated.Config{Resolvers: resolver}))
+	srv2 := handler.NewDefaultServer(graphgenerated2.NewExecutableSchema(graphgenerated2.Config{Resolvers: &graph2.Resolver{}}))
 
 	http.Handle("/", playground.Handler("GraphQL playground", "/query"))
 	// http.Handle("/query", srv)
 	http.Handle("/query", loader.Middleware(loader.NewLoaders(), srv))
+	http.Handle("/query2", srv2)
 
 	log.Printf("connect to http://localhost:%s/ for GraphQL playground", port)
 	log.Fatal(http.ListenAndServe(":"+port, nil))
