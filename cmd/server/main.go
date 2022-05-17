@@ -10,11 +10,9 @@ import (
 	"github.com/99designs/gqlgen/graphql/playground"
 	"github.com/greendrop/todo-graphql-go-sample/domain/entity"
 	"github.com/greendrop/todo-graphql-go-sample/infrastructure/persistence"
-	"github.com/greendrop/todo-graphql-go-sample/interface/graph"
 	graphgenerated "github.com/greendrop/todo-graphql-go-sample/interface/graph/generated"
 	"github.com/greendrop/todo-graphql-go-sample/interface/loader"
-	usecase_todo "github.com/greendrop/todo-graphql-go-sample/usecase/todo"
-	usecase_user "github.com/greendrop/todo-graphql-go-sample/usecase/user"
+	"github.com/greendrop/todo-graphql-go-sample/registry"
 	"go.uber.org/zap"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
@@ -47,13 +45,13 @@ func main() {
 		port = defaultPort
 	}
 
-	todoPersistence := persistence.NewTodoPersistence()
-	todoGetTodoListUseCase := usecase_todo.NewTodoGetTodoListUseCase(todoPersistence)
-	todoCreateTodoUseCase := usecase_todo.NewTodoCreateTodoUseCase(todoPersistence)
-	userPersistence := persistence.NewUserPersistence()
-	userGetUserUseCase := usecase_user.NewUserGetUserUseCase(userPersistence)
-
-	resolver := graph.NewResolver(todoGetTodoListUseCase, todoCreateTodoUseCase, userGetUserUseCase)
+	// todoPersistence := persistence.NewTodoPersistence()
+	// todoGetTodoListUseCase := usecase_todo.NewTodoGetTodoListUseCase(todoPersistence)
+	// todoCreateTodoUseCase := usecase_todo.NewTodoCreateTodoUseCase(todoPersistence)
+	// userPersistence := persistence.NewUserPersistence()
+	// userGetUserUseCase := usecase_user.NewUserGetUserUseCase(userPersistence)
+	// resolver := graph.NewResolver(todoGetTodoListUseCase, todoCreateTodoUseCase, userGetUserUseCase)
+	resolver := registry.InitializeGraphResolver()
 	srv := handler.NewDefaultServer(graphgenerated.NewExecutableSchema(graphgenerated.Config{Resolvers: resolver}))
 
 	http.Handle("/", playground.Handler("GraphQL playground", "/query"))
